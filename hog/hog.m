@@ -2,10 +2,21 @@
 
 clear all; close all; clc;
 
-img=double(imread('lena.jpg'));
-imshow(img,[]);
+rgb_image= imread('lena.jpg');
+%img=rgb2gray(rgb_image); %ÊäÈëÊÇimreadµÄ·µ»Ø 
+img = double( rgb2gray(rgb_image) );
+%imshow(img/256); %imshow ÊäÈë·¶Î§ÒªÔÚ 0 ~1 
+%return ;
+
+%[m n depth]=size(img); % Èç¹ûÊÇRGBÍ¼Æ¬512*512  [m n]=size(img)·µ»ØµÄÊÇ 512,512*3=1536 µ«ÊÇ[m n depth]·µ»ØµÄ¾ÍÊÇ[512,512,3]
 [m n]=size(img);
-img=sqrt(img);      %Ù¤ÂíĞ£Õı
+%img=sqrt(img);      %Ù¤ÂíĞ£Õı
+imshow(img/256);
+%Í¼Æ¬ÒªÊÇ»Ò¶ÈÍ¼
+ 
+
+m % 512
+n % 512
 
 %ÏÂÃæÊÇÇó±ßÔµ    
 fy=[-1 0 1];        %¶¨ÒåÊúÖ±Ä£°å
@@ -30,7 +41,7 @@ Iphase=Iy./Ix;                           %±ßÔµĞ±ÂÊ£¬ÓĞĞ©Îªinf,-inf,nan£¬ÆäÖĞnanĞ
 % size_options  Êä³öÍ¼ÏñµÄ´óĞ¡             ¡®full¡¯        Êä³öÍ¼ÏñµÄ´óĞ¡Óë±»À©Õ¹Í¼ÏñµÄ´óĞ¡ÏàÍ¬  
 %                                         ¡®same¡¯(Ä¬ÈÏ)  Êä³öÍ¼ÏñµÄ´óĞ¡ÓëÊäÈëÍ¼ÏñµÄ´óĞ¡ÏàÍ¬  Õâ¿ÉÍ¨¹ı½«ÂË²¨ÑÚÄ£µÄÖĞĞÄµãµÄÆ«ÒÆÏŞÖÆµ½Ô­Í¼ÏñÖĞ°üº¬µÄµãÀ´ÊµÏÖ
 
-fid = fopen('exp.txt', 'wt');%ĞèÒªÏÈ´ò¿ªÒ»¸öÎÄ¼ş
+% fid = fopen('exp.txt', 'wt');%ĞèÒªÏÈ´ò¿ªÒ»¸öÎÄ¼ş
 
 
 
@@ -41,6 +52,7 @@ jiao=360/orient;        %Ã¿¸ö·½Ïò°üº¬µÄ½Ç¶ÈÊı
 Cell=cell(1,1);         %ËùÓĞµÄ½Ç¶ÈÖ±·½Í¼,cellÊÇ¿ÉÒÔ¶¯Ì¬Ôö¼ÓµÄ£¬ËùÒÔÏÈÉèÁËÒ»¸ö
 ii=1;                      
 jj=1;
+
 for i=1:step:m          %Èç¹û´¦ÀíµÄm/step²»ÊÇÕûÊı£¬×îºÃÊÇi=1:step:m-step
     ii=1;
     for j=1:step:n      %Ã¿16 * 16¸öÏñËØ ×÷ÎªÒ»¸öcell  i j ×÷Îª Í¼ÏñÔªËØË÷Òı
@@ -51,39 +63,37 @@ for i=1:step:m          %Èç¹û´¦ÀíµÄm/step²»ÊÇÕûÊı£¬×îºÃÊÇi=1:step:m-step
         tmpphase=Iphase(i:i+step-1,j:j+step-1);
         
         Hist=zeros(1,orient);               % µ±Ç°step*stepÏñËØ¿éÍ³¼Æ½Ç¶ÈÖ±·½Í¼,¾ÍÊÇcell
-                                            % B=zeros(m,n)£ºÉú³Ém¡ÁnÈ«ÁãÕó 
+                                            % B=zeros(m,n)£ºÉú³Ém¡ÁnÈ«ÁãÕó
+                                            % 1 x orient ĞĞÏòÁ¿ 
         for p=1:step
-            for q=1:step  % ±éÀú CellÖĞµÄ9x9¸öÔªËØ Í³¼Æ
+            for q=1:step  % ±éÀú CellÖĞµÄ9x9¸öÔªËØ È»ºó×öÍ³¼Æ
                 
                 if isnan(tmpphase(p,q))==1  %0/0»áµÃµ½nan£¬Èç¹ûÏñËØÊÇnan£¬ÖØÉèÎª0
                     tmpphase(p,q)=0;
                 end
                 
-                ang=atan(tmpphase(p,q));    %atanÇóµÄÊÇ[-90 90]¶ÈÖ®¼ä
-                orgin_angle = ang ;
-                angle = ang ;
+                ang=atan(tmpphase(p,q));    %atanÇóµÄÊÇ[-90 90]¶ÈÖ®¼ä  ·µ»ØµÄÊÇ»¡¶È
                 
-                ang=mod(ang*180/pi,360);    %È«²¿±äÕı£¬-90±ä270
-                if tmpx(p,q)<0              %¸ù¾İx·½ÏòÈ·¶¨ÕæÕıµÄ½Ç¶È
-                    if ang<90               %Èç¹ûÊÇµÚÒ»ÏóÏŞ
-                        ang=ang+180;        %ÒÆµ½µÚÈıÏóÏŞ
-                    end
-                    if ang>270              %Èç¹ûÊÇµÚËÄÏóÏŞ
-                        ang=ang-180;        %ÒÆµ½µÚ¶şÏóÏŞ
-                    end
-                end
+%                 ang=mod(ang*180/pi,360);    %È«²¿±äÕı£¬-90±ä270
+%                 if tmpx(p,q)<0              %¸ù¾İx·½ÏòÈ·¶¨ÕæÕıµÄ½Ç¶È
+%                     if ang<90               %Èç¹ûÊÇµÚÒ»ÏóÏŞ
+%                         ang=ang+180;        %ÒÆµ½µÚÈıÏóÏŞ
+%                     end
+%                     if ang>270              %Èç¹ûÊÇµÚËÄÏóÏŞ
+%                         ang=ang-180;        %ÒÆµ½µÚ¶şÏóÏŞ
+%                     end
+%                 end
                   
+                ang = ang * 180 / pi ; % »¡¶È×ª½Ç¶È
                 if tmpx(p,q) < 0   
-                    angle = angle + 180 ;
+                    ang = ang + 180 ;
                 end
-                if ( angle < 0.0 )
-                    angle = angle + 360 ;
+                if ( ang < 0.0 )
+                    ang = ang + 360 ;
                 end
-                fprintf(fid, 'x %f phase %f ori %f angle %f ang %f\n', tmpx(p,q) , tmpphase(p,q) , orgin_angle , angle , ang ); 
-                
+                %fprintf(fid, 'x %f phase %f ori %f angle %f ang %f\n', tmpx(p,q) , tmpphase(p,q) , orgin_angle , angle , ang ); 
                 
                 % ÕâÀïµÄ½Ç¶È ÔÚ 0 ~ 360 ¶È
-                
                 ang=ang+0.0000001;          %·ÀÖ¹angÎª0  MatlabµÄÊı×é×ø±ê´Ó1¿ªÊ¼ ±ÜÃâHist(0)µÄ³öÏÖ
                 Hist( ceil(ang/jiao) )  =  Hist( ceil(ang/jiao) ) +  tmped(p,q);   %ceilÏòÉÏÈ¡Õû£¬Ê¹ÓÃ±ßÔµÇ¿¶È¼ÓÈ¨
             end  % Ã¿¸öCellµÄHist ËùÓĞÔªËØ(9¸ö) ¼ÓÆğÀ´ºÍÊÇ1
@@ -95,25 +105,33 @@ for i=1:step:m          %Èç¹û´¦ÀíµÄm/step²»ÊÇÕûÊı£¬×îºÃÊÇi=1:step:m-step
     jj=jj+1;                    %Õë¶ÔCellµÄx×ø±êÑ­»·±äÁ¿
 end
 
+ 
+
+%Ôª°ûÊı×é  Ã¿¸öÔªËØ¿ÉÒÔÊÇ²»Í¬µÄÀàĞÍºÍÄÚÈİ  ¿É¶¯Ì¬·ÖÅä/Ôö´ó
+% a = { 20, 'matlab' ;  ones(2,3) , 1:3 }
+% a(1,2)   = 'matlab'
+% a{1,2}   = matlab 
+%{}  Ôª°ûµÄÄÚÈİ   () Ôª°û
+
 %ÏÂÃæÊÇÇófeature,2*2¸öcellºÏ³ÉÒ»¸öblock,Ã»ÓĞÏÔÊ½µÄÇóblock
-[m n]=size(Cell);
-feature=cell(1,(m-1)*(n-1));
+[m n]=size(Cell); % 32x32 cell  @ 512x512Í¼Æ¬  
+feature=cell(1,(m-1)*(n-1)); % 1x961 cell  @ 512x512Í¼Æ¬
 for i=1:m-1
    for j=1:n-1           
         f=[];
-        f=[f Cell{i,j}(:)' Cell{i,j+1}(:)' Cell{i+1,j}(:)' Cell{i+1,j+1}(:)'];
-	f=f./sum(f);%¹éÒ»»¯
+        f=[  f   Cell{i,j}(:)'    Cell{i,j+1}(:)'   Cell{i+1,j}(:)'    Cell{i+1,j+1}(:)'];
+        f=f./sum(f);%¹éÒ»»¯
         feature{(i-1)*(n-1)+j}=f;
    end
 end
 
-fclose(fid)
+% fclose(fid)
 
 %µ½´Ë½áÊø£¬feature¼´ÎªËùÇó
 %ÏÂÃæÊÇÎªÁËÏÔÊ¾¶øĞ´µÄ
-l=length(feature);
+len=length(feature);
 f=[];
-for i=1:l
+for i=1:len
     f=[f;feature{i}(:)'];  
 end 
 figure
