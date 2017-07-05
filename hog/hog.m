@@ -2,17 +2,23 @@
 
 clear all; close all; clc;
 
-rgb_image= imread('lena.jpg');
-%img=rgb2gray(rgb_image); %输入是imread的返回 
-img = double( rgb2gray(rgb_image) );
-%imshow(img/256); %imshow 输入范围要在 0 ~1 
+%rgb_image= imread('lena.jpg');
+%img=rgb2gray(rgb_image); %输入是imread的返回
+%img = double( rgb2gray(rgb_image) );
+%imshow(img/256);
+
+%img = imread('lena_gray_256.jpg'); % 返回的元素是 uint8 
+img = double(  imread('lena_gray_256.jpg') );
+%imshow(img/256 ); %imshow 对于元素是double的 要求输入范围要在 0~1  对于元素是uint8的 要求输入在0~255 
+%imshow(img,[]);   % img要是double Mat 作用跟 imshow(img/256 ) 一样
 %return ;
 
 %[m n depth]=size(img); % 如果是RGB图片512*512  [m n]=size(img)返回的是 512,512*3=1536 但是[m n depth]返回的就是[512,512,3]
 [m n]=size(img);
-%img=sqrt(img);      %伽马校正
+img=sqrt(img);      %伽马校正  x^(1/2)
 imshow(img/256);
 %图片要是灰度图
+%return ;
  
 
 m % 512
