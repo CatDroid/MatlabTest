@@ -2,6 +2,7 @@ function filt=MyGaussian(varargin)
 % 高斯函数的离散近似   高斯函数上取离散点的值 并归一化
 % varargin{1}  模板尺寸mxn  若是一个数字 那就是m=n 
 % varargin{2}  方差 sigma 
+% copy from http://blog.csdn.net/u010839382/article/details/41908541
 
 %参数初始化，使用varargin处理可变参数情况  
 siz=varargin{1};%模板尺寸
