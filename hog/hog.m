@@ -1,8 +1,9 @@
 function [hog_Feature] = hog(detectedImg, options)  
 % -------------------------------------------------------------------------  
-% 实现hog（Histogram of gradient）特征的提取过程  
+% 实现hog（Histogram of gradient）特征的提取过程   
 %  
-% detectedImg-- 检测窗口包含的图像（灰度图）  
+% detectedImg-- 检测窗口包含的图像（灰度图）         %！！！！外部应该先把图像按照检测窗口滑动把窗口的数据作为参数 detectedImg
+%                                                  %！！！！最后自己把所有窗口的特征向量 串联起来
 % options-- 参数结构体，包含许多参数设置：  
 %            cellH, cellW：单元大小    
 %            blockH, blockW：块大小  
@@ -222,7 +223,7 @@ for i = 1:blockH
 end  
 % 将每个cell的直方图合并（拼接一维向量）  
 hist = reshape(hist, [1 numel(hist)]);  
-% 归一化处理（默认选择L2-norm，可以用其他规则替代）  
+% 归一化处理（默认选择L2-norm，可以用其他规则替代）              对在block上进行归一化
 hist = hist./sqrt(hist*hist'+ options.epsilon.^2);   % hist*hist' 就是所有元素求和
 end  
 % =========================================================================  
